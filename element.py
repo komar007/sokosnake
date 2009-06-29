@@ -7,12 +7,13 @@ class Conflict:
 		            (repr(self.e), self.x, self.y))
 
 class Element(object):
+	accepted_under = []
 	def __init__(self, x, y, params = {}):
 		# Default __init__ ignores params. To be used by subclasses
 		self.x = x
 		self.y = y
 		# the list of other elements the element can be placed on
-		self.accepted_under = []
+		self.accepted_under = type(self).accepted_under
 
 	def __del__(self):
 		if self.level is not None:
