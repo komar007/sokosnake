@@ -1,41 +1,44 @@
 from element import *
 
 class Passage(Element):
-	accepted_under = []
+	conflicts_with = []
+
+class Wall(Element):
+	conflicts_with = []
+
+class Head(Element):
+	conflicts_with = [Wall]
+	def __init__(self, x, y, params = {}):
+		Element.__init__(self, x, y, params)
+		self.expected_len = params['len']
+		self.len = 0
+
+class Body(Element):
+	a = Attribute("attr")
+	conflicts_with = [Wall, Head]
+
+class Room(Element):
+	conflicts_with = [Passage]
+
+class Diamond(Element):
+	conflicts_with = [Wall, Head, Body]
+
+class Apple(Element):
+	conflicts_with = [Wall]
 
 class Teleport(Element):
-	accepted_under = [Passage]
+	conflicts_with = [Wall, Diamond]
 	def __init__(self, x, y, params = {}):
-		super(Teleport, self).__init__(x, y, params)
+		Element.__init__(self, x, y, params)
 		self.num = int(params['n'])
 
 class Teleend(Element):
-	accepted_under = [Passage]
+	conflicts_with = [Wall, Diamond]
 	def __init__(self, x, y, params = {}):
-		super(Teleend, self).__init__(x, y, params)
+		Element.__init__(self, x, y, params)
 		self.num = int(params['n'])
 
-class Wall(Element):
-	accepted_under = [Passage]
-
-class Room(Element):
-	accepted_under = [Passage]
-
-class Apple(Element):
-	accepted_under = [Passage, Room, Teleport, Teleend]
-
 class Rock(Element):
-	accepted_under = [Passage, Room]
+	conflicts_with = [Head, Body, Diamond, Teleport, Teleend, Apple]
 
-class Diamond(Element):
-	accepted_under = [Passage, Room]
 
-class Body(Element):
-	accepted_under = [Passage, Teleport, Teleend]
-
-class Head(Element):
-	accepted_under = [Passage, Teleport, Teleend]
-	def __init__(self, x, y, params = {}):
-		super(Head, self).__init__(x, y, params)
-		self.expected_len = params['len']
-		self.len = 0

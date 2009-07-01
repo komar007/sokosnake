@@ -1,7 +1,7 @@
 import re
 import logging
 
-from level import *
+from game import *
 from element import *
 from elements import *
 
@@ -25,7 +25,7 @@ def element(letter, params, x, y):
 def parse_level(level_str):
 	[header, map] = re.split(r'\n{2,}', level_str)
 	[size_x, size_y] = [int(dim) for dim in re.split(r', *', header)]
-	lvl = Level(size_x, size_y)
+	lvl = Game(size_x, size_y)
 	for y, line in enumerate(re.split('\n', map.strip())):
 		for x, token in enumerate(re.split(r'(?<!\\) +', line.strip())):
 			for (letter, params) in re.findall(r'([a-zA-Z-_])(?:\(([^()]+)\))?',

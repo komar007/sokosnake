@@ -4,7 +4,7 @@ import os
 
 from element import *
 from elements import *
-from level import *
+from game import *
 from parser import *
 
 backgrounds = {Apple: COLOR_BLACK,        Wall: COLOR_MAGENTA,
@@ -35,13 +35,13 @@ class Interface(object):
 				return x[-1]
 			else:
 				return None
-		self.level = parse_level(open(filename).read())
-		self.level.snake = filter(lambda x: type(x) == Head, map(findsnake, self.level.map.values()))[0]
+		self.game = parse_level(open(filename).read())
+		self.game.snake = filter(lambda x: type(x) == Head, map(findsnake, self.game.map.values()))[0]
 
 	def init_curses(self):
 		self.stdscr = curses.initscr()
 		curses.cbreak()
-		self.pad = curses.newpad(self.level.size_y + 3, self.level.size_x + 3)
+		self.pad = curses.newpad(self.game.size_y + 3, self.game.size_x + 3)
 		self.pad.keypad(1)
 
 	def end_curses(self):
@@ -99,26 +99,26 @@ class Interface(object):
 		return (letter, self.color[fg, bg])
 
 	def refresh_window(self):
-		for x in range(self.level.size_x):
-			for y in range(self.level.size_y):
-				self.pad.addch(y, x, *self.render_field(self.level.map[x,y]))
+		for x in range(self.game.size_x):
+			for y in range(self.game.size_y):
+				self.pad.addch(y, x, *self.render_field(self.game.map[x,y]))
 		# FIXME: Change this
-		self.pad.refresh(0, 0,  0,0, self.level.size_y + 2, self.level.size_x + 2)
+		self.pad.refresh(0, 0,  0,0, self.game.size_y + 2, self.game.size_x + 2)
 
 	def start(self):
-		# FIXME: To move the snake, send actions or whatever to level
+		# FIXME: To move the snake, send actions or whatever to game
 		self.refresh_window()
 		while True:
 			c = self.pad.getch()
 			try:
 				if c in [ord('l'), curses.KEY_RIGHT]:
-					self.level.snake.move(self.level.snake.x + 1, self.level.snake.y)
+					self.game.snake.move(self.game.snake.x + 1, self.game.snake.y)
 				if c in [ord('h'), curses.KEY_LEFT]:
-					self.level.snake.move(self.level.snake.x - 1, self.level.snake.y)
+					self.game.snake.move(self.game.snake.x - 1, self.game.snake.y)
 				if c in [ord('j'), curses.KEY_DOWN]:
-					self.level.snake.move(self.level.snake.x, self.level.snake.y + 1)
+					self.game.snake.move(self.game.snake.x, self.game.snake.y + 1)
 				if c in [ord('k'), curses.KEY_UP]:
-					self.level.snake.move(self.level.snake.x, self.level.snake.y - 1)
+					self.game.snake.move(self.game.snake.x, self.game.snake.y - 1)
 				if c in [ord('q')]:
 					break;
 				self.refresh_window()
