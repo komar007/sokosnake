@@ -40,9 +40,14 @@ class Element(object):
 		# If the element can be placed on all of the elements...
 		if not any(self.conflict(x) for x in self.game.map[x, y]):
 			game = self.game
+			game.send_callbacks(events.Move(self, 'before',
+				from_field = (self.x, self.y), to_field = (x, y)))
 			game.remove(self)
+			old_x, old_y = self.x, self.y
 			self.x, self.y = x, y
 			game.add(self)
+			game.send_callbacks(events.Move(self, 'after',
+				from_field = (old_x, old_y), to_field = (self.x, self.y)))
 		else:
 			raise Conflict(self, x, y)
 

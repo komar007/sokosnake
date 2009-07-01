@@ -17,9 +17,7 @@ class Game:
 		self.map[element.x, element.y].remove(element)
 
 	def send_callbacks(self, event):
-		if type(event) == events.AttrChange:
-			print("Attribute %s in element %s changed from %s to %s!" %
-			      tuple([repr(x) for x in
-			      [event.attr_name, event.element, event.prev_value, event.cur_value]]))
+		print str(event)
+		
 
 
