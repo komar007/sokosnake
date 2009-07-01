@@ -8,13 +8,8 @@ class Wall(Element):
 
 class Head(Element):
 	conflicts_with = [Wall]
-	def __init__(self, x, y, params = {}):
-		Element.__init__(self, x, y, params)
-		self.expected_len = params['len']
-		self.len = 0
 
 class Body(Element):
-	a = Attribute("attr")
 	conflicts_with = [Wall, Head]
 
 class Room(Element):

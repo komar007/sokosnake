@@ -22,7 +22,6 @@ class Attribute(object):
 		self.val = val
 		obj.game.send_callbacks(events.AttrChange(obj, 'after', self.name, old_val, val))
 
-
 class Element(object):
 	conflicts_with = []
 	def __init__(self, x, y, params = {}):
@@ -53,4 +52,8 @@ class Element(object):
 
 	def conflict(self, obj):
 		return type(obj) in self.conflicts_with or type(self) in obj.conflicts_with
+
+	def action(self, name, caller, params = {}):
+		# FIXME: implement action list and real execution
+		print "Someone (%s) executed action %s on me(%s)" % (repr(caller), name, repr(self))
 
