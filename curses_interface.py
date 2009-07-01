@@ -130,6 +130,3 @@ class Interface(object):
 interface = Interface("lvl")
 interface.start()
 del interface
-
-
-

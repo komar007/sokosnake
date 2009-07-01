@@ -1,4 +1,5 @@
 import re
+
 import logging
 
 from game import *
@@ -11,13 +12,13 @@ class ParseError:
 	def __str__(self):
 		return repr(self.value)
 
-def element(letter, params, x, y):
+def element(letter, params, x, y, game):
 	# FIXME: Remove any element definitions from parser
 	ELEMENTS = {'_': Passage, 'W': Wall,   'S': Head,    'A': Apple,
 	            'R': Room,    'K': Rock,   'D': Diamond, 'T': Teleport,
 	            't': Teleend}
 	try:
-		return ELEMENTS[letter](x, y, parse_params(params))
+		return ELEMENTS[letter](x, y, game, parse_params(params))
 	except KeyError:
 		raise ParseError("Unrecognized element character: '%c' at position (%i, %i)." %
 		                 (letter, x, y))
@@ -30,10 +31,9 @@ def parse_level(level_str):
 		for x, token in enumerate(re.split(r'(?<!\\) +', line.strip())):
 			for (letter, params) in re.findall(r'([a-zA-Z-_])(?:\(([^()]+)\))?',
 			                                   re.sub(r'\\ ', ' ', token)):
-				lvl.add(element(letter, params, x, y))
+				element(letter, params, x, y, lvl)
 	return lvl
 
 def parse_params(str):
 	h = dict(re.findall(r'([^, ]+)=([^,]+)', str))
 	return h
-

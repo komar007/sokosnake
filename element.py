@@ -24,12 +24,15 @@ class Attribute(object):
 
 class Element(object):
 	conflicts_with = []
-	def __init__(self, x, y, params = {}):
+	supported_actions = {}
+	def __init__(self, x, y, game = None, params = {}):
 		# Default __init__ ignores params. To be used by subclasses
 		self.x = x
 		self.y = y
 		# the list of other elements the element can be placed on
 		self.conflicts_with = type(self).conflicts_with
+		if game is not None:
+			game.add(self)
 
 	def __del__(self):
 		if self.game is not None:
@@ -37,10 +40,10 @@ class Element(object):
 
 	def move(self, x, y):
 		# If the element can be placed on all of the elements...
+		game = self.game
+		game.send_callbacks(events.Move(self, 'before',
+			from_field = (self.x, self.y), to_field = (x, y)))
 		if not any(self.conflict(x) for x in self.game.map[x, y]):
-			game = self.game
-			game.send_callbacks(events.Move(self, 'before',
-				from_field = (self.x, self.y), to_field = (x, y)))
 			game.remove(self)
 			old_x, old_y = self.x, self.y
 			self.x, self.y = x, y
@@ -53,7 +56,9 @@ class Element(object):
 	def conflict(self, obj):
 		return type(obj) in self.conflicts_with or type(self) in obj.conflicts_with
 
-	def action(self, name, caller, params = {}):
-		# FIXME: implement action list and real execution
-		print "Someone (%s) executed action %s on me(%s)" % (repr(caller), name, repr(self))
+	def run_action(self, name, params = {}, calling_event = None):
+		try:
+			self.supported_actions[name](self, calling_event, params)
+		except KeyError:
+			pass
 

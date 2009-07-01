@@ -24,7 +24,7 @@ class Game:
 				continue
 			for callback in self.callbacks[key]:
 				if callback.match(event):
-					callback.run()
+					callback.run(event)
 
 
 
