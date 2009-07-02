@@ -19,18 +19,15 @@ def action_stretch(self, event, params):
 class Head(Element):
 	conflicts_with = [Wall]
 
-	def parse_params(self, params = {}):
-		self.expected_len = int(params['len'])
-
 	def post_init(self):
-		self.len = 0
+		self.real_len = 0
 		self.next = None
 
 	def action_move(self, event, params):
-		if self.expected_len > self.len:
+		if self.len > self.real_len:
 			self.run_action('stretch', {'prev': None})
-		self.len += 1
-		self.move(params['x'], params['y'])
+		self.real_len += 1
+		self.move(*params['field'])
 
 	supported_actions = {'move': action_move, 'stretch': action_stretch}
 
@@ -41,9 +38,6 @@ class Body(Element):
 		Element.__init__(self, x, y, game, params)
 		self.post_init()
 	
-	def parse_params(self, params = {}):
-		self.prev = params['prev']
-
 	def post_init(self):
 		self.next = None
 		self.game.add_callback(Callback(
@@ -59,6 +53,28 @@ class Body(Element):
 
 class Room(Element):
 	conflicts_with = [Passage]
+
+	def post_init(self):
+		self.game.add_callback(Callback(
+				query = events.Move(None, 'after', None, (self.x, self.y)),
+				target = self,
+				action = 'diamond',
+				action_params = {'dir': 'in'},
+				filter = lambda ev: type(ev.element) == Diamond))
+		self.game.add_callback(Callback(
+				query = events.Move(None, 'after', (self.x, self.y), None),
+				target = self,
+				action = 'diamond',
+				action_params = {'dir': 'out'},
+				filter = lambda ev: type(ev.element) == Diamond))
+
+	def action_diamond(self, event, params):
+		if params['dir'] == 'in':
+			self.game.diamonds += 1
+		else:
+			self.game.diamonds -= 1
+
+	supported_actions = {'diamond': action_diamond}
 
 class Pushable(Element):
 	def post_init(self):
@@ -93,27 +109,24 @@ class Apple(Element):
 				action = 'eat'))
 
 	def action_eat(self, event, params):
+		self.game.snake.run_action('stretch')
+		self.game.points += 10
 		self.destroy()
 
 	supported_actions = {'eat': action_eat}
 
 class Teleport(Element):
 	conflicts_with = [Wall, Diamond]
-	def parse_params(self, params = {}):
-		self.num = int(params['n'])
-		self.to_x, self.to_y = int(params['x']), int(params['y'])
 
 	def post_init(self):
 		self.game.add_callback(Callback(
 				query = events.Move(self.game.snake, 'after', None, (self.x, self.y)),
 				target = self.game.snake,
 				action = 'move',
-				action_params = {'x': self.to_x, 'y': self.to_y}))
+				action_params = {'field': (self.to_x, self.to_y)}))
 
 class Teleend(Element):
 	conflicts_with = [Wall, Diamond]
-	def parse_params(self, params = {}):
-		self.num = int(params['n'])
 
 class Rock(Pushable):
 	conflicts_with = [Wall, Head, Body, Diamond, Teleport, Teleend, Apple]

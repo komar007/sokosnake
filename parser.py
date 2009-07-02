@@ -1,43 +1,35 @@
 import re
 
-import logging
-
-from game import *
-from element import *
-from elements import *
-
 class ParseError:
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 
-def element(letter, params, x, y, game):
-	# FIXME: Remove any element definitions from parser
-	ELEMENTS = {'_': Passage, 'W': Wall,   'S': Head,    'A': Apple,
-	            'R': Room,    'K': Rock,   'D': Diamond, 'T': Teleport,
-	            't': Teleend}
-	try:
-		return ELEMENTS[letter](x, y, game, parse_params(params))
-	except KeyError:
-		raise ParseError("Unrecognized element character: '%c' at position (%i, %i)." %
-		                 (letter, x, y))
+class Parser:
+	def __init__(self, element_hash):
+		self.element_hash = element_hash
 
-def parse_level(level_str):
-	[header, map] = re.split(r'\n{2,}', level_str)
-	[size_x, size_y] = [int(dim) for dim in re.split(r', *', header)]
-	lvl = Game(size_x, size_y)
-	for y, line in enumerate(re.split('\n', map.strip())):
-		for x, token in enumerate(re.split(r'(?<!\\) +', line.strip())):
-			for (letter, params) in re.findall(r'([a-zA-Z-_])(?:\(([^()]+)\))?',
-			                                   re.sub(r'\\ ', ' ', token)):
-				element(letter, params, x, y, lvl)
-	# FIXME: Do it...
-	lvl.snake = lvl.find_element(lambda el: type(el) == Head)[0]
-	for el in lvl.elements:
-		el.real_init()
-	return lvl
+	def create_element(self, letter, x, y, params):
+		try:
+			klass = self.element_hash[letter]
+			return klass(x, y, None, self.parse_params(params))
+		except KeyError:
+			raise ParseError("Unrecognized element character: '%c' at position (%i, %i)." %
+							 (letter, x, y))
 
-def parse_params(str):
-	h = dict(re.findall(r'([^, ]+)=([^,]+)', str))
-	return h
+	def load(self, level_str):
+		[self.header, self.map] = re.split(r'\n{2,}', level_str)
+		[self.size_x, self.size_y] = [int(dim) for dim in re.split(r', *', self.header)]
+		return (self.size_x, self.size_y)
+	
+	def parse(self):
+		for y, line in enumerate(re.split('\n', self.map.strip())):
+			for x, token in enumerate(re.split(r'(?<!\\) +', line.strip())):
+				for (letter, params) in re.findall(r'([a-zA-Z-_])(?:\(([^()]+)\))?',
+												   re.sub(r'\\ ', ' ', token)):
+					yield self.create_element(letter, x, y, params)
+
+	def parse_params(self, str):
+		h = dict(re.findall(r'([^, ]+)=([^,]+)', str))
+		return h

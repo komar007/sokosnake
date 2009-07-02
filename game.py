@@ -24,6 +24,10 @@ class Game:
 		self.map[element.x, element.y].append(element)
 		self.elements.append(element)
 
+	def post_initialize(self):
+		for element in self.elements:
+			element.post_init()
+
 	def find_element(self, func):
 		return filter(func, self.elements)
 

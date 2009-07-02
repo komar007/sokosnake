@@ -1,12 +1,12 @@
+# FIXME: CRAP, CRAP, CRAP
+
 import curses
 from curses import COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE
 import os
 import sys
 
-from element import *
 from elements import *
-from game import *
-from parser import *
+from sokosnake import *
 
 backgrounds = {Apple: COLOR_BLACK,        Wall: COLOR_MAGENTA,
                Teleport: COLOR_BLUE,      Teleend: COLOR_GREEN,
@@ -30,14 +30,7 @@ class Interface(object):
 		self.end_curses()
 
 	def load_level(self, filename):
-		# FIXME: Fix this
-		def findsnake(x):
-			if x:
-				return x[-1]
-			else:
-				return None
-		self.game = parse_level(open(filename).read())
-		self.game.snake = filter(lambda x: type(x) == Head, map(findsnake, self.game.map.values()))[0]
+		self.game = Sokosnake(filename)
 
 	def init_curses(self):
 		self.stdscr = curses.initscr()
@@ -79,9 +72,9 @@ class Interface(object):
 		elif type(e) == Wall:
 			letter = '#'
 		elif type(e) == Teleport:
-			letter = str(e.num)
+			letter = str(e.n)
 		elif type(e) == Teleend:
-			letter = str(e.num)
+			letter = str(e.n)
 		elif type(e) == Head:
 			letter = '@'
 		elif type(e) == Body:
@@ -103,6 +96,7 @@ class Interface(object):
 		for x in range(self.game.size_x):
 			for y in range(self.game.size_y):
 				self.pad.addch(y, x, *self.render_field(self.game.map[x,y]))
+		self.pad.addstr(self.game.size_y + 1, 0, "points: %i\ndiamonds: %i / %i" % (self.game.points, self.game.diamonds, self.game.diamonds_all))
 		# FIXME: Change this
 		self.pad.refresh(0, 0,  0,0, self.game.size_y + 2, self.game.size_x + 2)
 
@@ -113,13 +107,13 @@ class Interface(object):
 			c = self.pad.getch()
 			try:
 				if c in [ord('l'), curses.KEY_RIGHT]:
-					self.game.snake.run_action('move', {'x': self.game.snake.x + 1, 'y': self.game.snake.y})
+					self.game.step(Right)
 				if c in [ord('h'), curses.KEY_LEFT]:
-					self.game.snake.run_action('move', {'x': self.game.snake.x - 1, 'y': self.game.snake.y})
+					self.game.step(Left)
 				if c in [ord('j'), curses.KEY_DOWN]:
-					self.game.snake.run_action('move', {'x': self.game.snake.x, 'y': self.game.snake.y + 1})
+					self.game.step(Down)
 				if c in [ord('k'), curses.KEY_UP]:
-					self.game.snake.run_action('move', {'x': self.game.snake.x, 'y': self.game.snake.y - 1})
+					self.game.step(Up)
 				if c in [ord('q')]:
 					break;
 				self.refresh_window()

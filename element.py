@@ -51,7 +51,17 @@ class Element(object):
 			pass
 
 	def parse_params(self, params = {}):
-		pass
+		for (key, val) in zip(params.keys(), params.values()):
+			self.__dict__[key] = self.parse_param(val)
+		
+	def parse_param(self, param):
+		try:
+			p = param
+			p = float(param)
+			p = int(param)
+		except (ValueError, TypeError):
+			pass
+		return p
 
 	def post_init(self):
 		pass
