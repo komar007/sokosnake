@@ -1,6 +1,7 @@
 import curses
 from curses import COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE
 import os
+import sys
 
 from element import *
 from elements import *
@@ -112,13 +113,13 @@ class Interface(object):
 			c = self.pad.getch()
 			try:
 				if c in [ord('l'), curses.KEY_RIGHT]:
-					self.game.snake.move(self.game.snake.x + 1, self.game.snake.y)
+					self.game.snake.run_action('move', {'x': self.game.snake.x + 1, 'y': self.game.snake.y})
 				if c in [ord('h'), curses.KEY_LEFT]:
-					self.game.snake.move(self.game.snake.x - 1, self.game.snake.y)
+					self.game.snake.run_action('move', {'x': self.game.snake.x - 1, 'y': self.game.snake.y})
 				if c in [ord('j'), curses.KEY_DOWN]:
-					self.game.snake.move(self.game.snake.x, self.game.snake.y + 1)
+					self.game.snake.run_action('move', {'x': self.game.snake.x, 'y': self.game.snake.y + 1})
 				if c in [ord('k'), curses.KEY_UP]:
-					self.game.snake.move(self.game.snake.x, self.game.snake.y - 1)
+					self.game.snake.run_action('move', {'x': self.game.snake.x, 'y': self.game.snake.y - 1})
 				if c in [ord('q')]:
 					break;
 				self.refresh_window()
@@ -127,6 +128,6 @@ class Interface(object):
 
 
 
-interface = Interface("lvl")
+interface = Interface(sys.argv[1] or 'lvl')
 interface.start()
 del interface

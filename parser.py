@@ -32,6 +32,10 @@ def parse_level(level_str):
 			for (letter, params) in re.findall(r'([a-zA-Z-_])(?:\(([^()]+)\))?',
 			                                   re.sub(r'\\ ', ' ', token)):
 				element(letter, params, x, y, lvl)
+	# FIXME: Do it...
+	lvl.snake = lvl.find_element(lambda el: type(el) == Head)[0]
+	for el in lvl.elements:
+		el.real_init()
 	return lvl
 
 def parse_params(str):

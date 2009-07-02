@@ -1,26 +1,6 @@
 import events
-
-class Conflict:
-	def __init__(self, e, x, y):
-		self.e, self.x, self.y = e, x, y
-
-	def __str__(self):
-		return repr('Element: %s: conflict at (%i, %i).' %
-		            (repr(self.e), self.x, self.y))
-
-class Attribute(object):
-	def __init__(self, name):
-		self.val = None
-		self.name = name
-
-	def __get__(self, obj, objtype = None):
-		return self.val
-
-	def __set__(self, obj, val):
-		old_val = self.val
-		obj.game.send_callbacks(events.AttrChange(obj, 'before', self.name, old_val, val))
-		self.val = val
-		obj.game.send_callbacks(events.AttrChange(obj, 'after', self.name, old_val, val))
+from attribute import Attribute
+from game import Conflict
 
 class Element(object):
 	conflicts_with = []
@@ -29,14 +9,21 @@ class Element(object):
 		# Default __init__ ignores params. To be used by subclasses
 		self.x = x
 		self.y = y
-		# the list of other elements the element can be placed on
 		self.conflicts_with = type(self).conflicts_with
 		if game is not None:
 			game.add(self)
+		self.parse_params(params)
 
 	def __del__(self):
 		if self.game is not None:
 			self.game.remove(self)
+	
+	def destroy(self):
+		if self.in_game():
+			self.game.remove(self)
+
+	def in_game(self):
+		return self.game is not None
 
 	def move(self, x, y):
 		# If the element can be placed on all of the elements...
@@ -58,7 +45,14 @@ class Element(object):
 
 	def run_action(self, name, params = {}, calling_event = None):
 		try:
-			self.supported_actions[name](self, calling_event, params)
+			if self.in_game():
+				self.supported_actions[name](self, calling_event, params)
 		except KeyError:
 			pass
+
+	def parse_params(self, params = {}):
+		pass
+
+	def post_init(self):
+		pass
 
