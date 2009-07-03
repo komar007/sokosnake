@@ -16,7 +16,7 @@ backgrounds = {Apple: COLOR_BLACK,        Wall: COLOR_MAGENTA,
 
 foregrounds = {Apple: COLOR_GREEN,        Wall: COLOR_BLACK,
                Teleport: COLOR_BLACK,     Teleend: COLOR_BLACK,
-               Head: COLOR_GREEN,         Body: COLOR_GREEN,
+               Head: COLOR_YELLOW,         Body: COLOR_GREEN,
                Diamond: COLOR_RED,        Passage: COLOR_BLACK,
                Rock: COLOR_WHITE,         Room: COLOR_BLACK}
 
@@ -103,25 +103,62 @@ class Interface(object):
 	def start(self):
 		# FIXME: To move the snake, send actions or whatever to game
 		self.refresh_window()
+		self.moves = ""
 		while True:
 			c = self.pad.getch()
 			try:
 				if c in [ord('l'), curses.KEY_RIGHT]:
 					self.game.step(Right)
+					self.moves += 'r'
 				if c in [ord('h'), curses.KEY_LEFT]:
 					self.game.step(Left)
+					self.moves += 'l'
 				if c in [ord('j'), curses.KEY_DOWN]:
 					self.game.step(Down)
+					self.moves += 'd'
 				if c in [ord('k'), curses.KEY_UP]:
 					self.game.step(Up)
+					self.moves += 'u'
 				if c in [ord('q')]:
 					break;
 				self.refresh_window()
 			except Conflict:
 				pass
+			except GameOver:
+				return "You won"
+
+	def play(self, moves):
+		# FIXME: To move the snake, send actions or whatever to game
+		self.refresh_window()
+		for c in moves:
+			try:
+				if c == 'r':
+					self.game.step(Right)
+				if c == 'l':
+					self.game.step(Left)
+				if c == 'd':
+					self.game.step(Down)
+				if c == 'u':
+					self.game.step(Up)
+				self.refresh_window()
+			except Conflict:
+				pass
+			except GameOver:
+				self.refresh_window()
+				return "You won"
+			#os.system("sleep 0.25")
 
 
 
-interface = Interface(sys.argv[1] or 'lvl')
-interface.start()
+interface = Interface(sys.argv[1])
+
+if len(sys.argv) == 3:
+	msg = interface.play(open(sys.argv[2]).read())
+	os.system("sleep 1")
+else:
+	msg = interface.start()
+	m = interface.moves
 del interface
+print msg
+if len(sys.argv) != 3:
+	print m

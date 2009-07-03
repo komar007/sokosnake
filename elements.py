@@ -1,6 +1,7 @@
-from element import *
-from callback import *
-import events
+from sokolib.element import *
+from sokolib.callback import *
+from sokolib.event import *
+from sokolib.events import *
 
 class Passage(Element):
 	conflicts_with = []
@@ -14,7 +15,7 @@ def action_stretch(self, event, params):
 		b = Body(self.x, self.y, self.game, {'prev': self})
 		self.next = b
 	else:
-		self.next.run_action('stretch')
+		self.next.action('stretch').run()
 
 class Head(Element):
 	conflicts_with = [Wall]
@@ -25,7 +26,7 @@ class Head(Element):
 
 	def action_move(self, event, params):
 		if self.len > self.real_len:
-			self.run_action('stretch', {'prev': None})
+			self.action('stretch', {'prev': None}).run()
 		self.real_len += 1
 		self.move(*params['field'])
 
@@ -40,10 +41,7 @@ class Body(Element):
 	
 	def post_init(self):
 		self.next = None
-		self.game.add_callback(Callback(
-				query = events.Move(self.prev, 'after', None, None),
-				target = self,
-				action = 'pull'))
+		self.game.connect(self.prev.event('after', Move), self.action('pull'))
 
 	def action_pull(self, event, params):
 		self.move(*event.from_field)
@@ -55,18 +53,9 @@ class Room(Element):
 	conflicts_with = [Passage]
 
 	def post_init(self):
-		self.game.add_callback(Callback(
-				query = events.Move(None, 'after', None, (self.x, self.y)),
-				target = self,
-				action = 'diamond',
-				action_params = {'dir': 'in'},
-				filter = lambda ev: type(ev.element) == Diamond))
-		self.game.add_callback(Callback(
-				query = events.Move(None, 'after', (self.x, self.y), None),
-				target = self,
-				action = 'diamond',
-				action_params = {'dir': 'out'},
-				filter = lambda ev: type(ev.element) == Diamond))
+		self.game.connect(self.game.event(Any, 'after', Move, to_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'in'}))
+
+		self.game.connect(self.game.event(Any, 'after', Move, from_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'out'}))
 
 	def action_diamond(self, event, params):
 		if params['dir'] == 'in':
@@ -78,11 +67,8 @@ class Room(Element):
 
 class Pushable(Element):
 	def post_init(self):
-		self.game.add_callback(Callback(
-				query = events.Move(self.game.snake, 'before', None, None),
-				target = self,
-				action = 'push',
-				filter = lambda ev: ev.to_field == (self.x, self.y)))
+		snake = self.game.snake
+		self.game.connect(snake.event('before', Move, condition = lambda ev: ev.to_field == (self.x, self.y)), self.action('push'))
 
 	def action_push(self, event, params):
 		self.move(self.x + event.to_field[0] - event.from_field[0],
@@ -91,25 +77,19 @@ class Pushable(Element):
 	supported_actions = {'push': action_push}
 
 class Diamond(Pushable):
-	conflicts_with = [Wall, Head, Body]
-
-	# FIXME: This is ugly
-	def __init__(self, x, y, game = None, params = {}):
-		Pushable.__init__(self, x, y, game, params)
-		self.conflicts_with.append(Diamond)
-
+	def post_init(self):
+		self.conflicts_with = [Wall, Head, Body, Diamond]
+		Pushable.post_init(self)
 
 class Apple(Element):
 	conflicts_with = [Wall, Diamond]
 
 	def post_init(self):
-		self.game.add_callback(Callback(
-				query = events.Move(self.game.snake, 'before', None, (self.x, self.y)),
-				target = self,
-				action = 'eat'))
+		snake = self.game.snake
+		self.game.connect(snake.event('before', Move, to_field = (self.x, self.y)), self.action('eat'))
 
 	def action_eat(self, event, params):
-		self.game.snake.run_action('stretch')
+		self.game.snake.action('stretch').run()
 		self.game.points += 10
 		self.destroy()
 
@@ -119,14 +99,14 @@ class Teleport(Element):
 	conflicts_with = [Wall, Diamond]
 
 	def post_init(self):
-		self.game.add_callback(Callback(
-				query = events.Move(self.game.snake, 'after', None, (self.x, self.y)),
-				target = self.game.snake,
-				action = 'move',
-				action_params = {'field': (self.to_x, self.to_y)}))
+		self.teleend = self.game.find_element(lambda e: type(e) == Teleend and e.n == self.n)
+		snake = self.game.snake
+		self.game.connect(snake.event('after', Move, to_field = (self.x, self.y)), snake.action('move', {'field': (self.teleend.x, self.teleend.y)}))
 
 class Teleend(Element):
-	conflicts_with = [Wall, Diamond]
+	conflicts_with = [Wall]
 
 class Rock(Pushable):
-	conflicts_with = [Wall, Head, Body, Diamond, Teleport, Teleend, Apple]
+	def post_init(self):
+		self.conflicts_with = [Wall, Head, Body, Diamond, Teleport, Teleend, Apple, Rock]
+		Pushable.post_init(self)

@@ -9,7 +9,7 @@ class Conflict:
 		return repr('Element: %s: conflict at (%i, %i).' %
 		            (repr(self.e), self.x, self.y))
 
-class Game:
+class Game(object):
 	def __init__(self, size_x, size_y):
 		self.map = {}
 		self.elements = []
@@ -28,8 +28,11 @@ class Game:
 		for element in self.elements:
 			element.post_init()
 
-	def find_element(self, func):
+	def find_elements(self, func):
 		return filter(func, self.elements)
+
+	def find_element(self, func):
+		return self.find_elements(func)[0]
 
 	def remove(self, element):
 		element.game = None
@@ -49,3 +52,24 @@ class Game:
 			self.callbacks[callback.query.hash_tuple()].append(callback)
 		except KeyError:
 			self.callbacks[callback.query.hash_tuple()] = [callback]
+
+	def connect(self, query, action):
+		c = Callback(query = query, action = action)
+		self.add_callback(c)
+
+	def event(self, element, before_after, type,
+	           from_field = None, to_field = None,
+	           attr_name = None, prev_val = None, next_val = None,
+			   condition = lambda x: True):
+		"""Create a generic event query
+
+		Example::
+		
+			game.event(Any, 'before', Move, to_field = self.pos)
+			
+		will create a query which will trigger an action before each time
+		any element moves into the field with self"""
+		if type == events.Move:
+			return events.Move(element, before_after, from_field, to_field, condition, query = True)
+		elif type == events.AttrChange:
+			return events.AttrChange(element, before_after, attr_name, prev_val, next_val, condition, query = True) 

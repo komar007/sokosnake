@@ -1,24 +1,10 @@
-class Event(object):
-	def __init__(self, elem, before_after, query = False):
-		self.element = elem
-		if before_after in ['before', 'after']:
-			self.before_after = before_after
-		else:
-			raise TypeError("Event before_after must be either 'before' or 'after'")
+from event import *
 
-	def match(self, event):
-		return all(val is None or val == event.__dict__[key] for key, val in
-				zip(self.__dict__.keys(), self.__dict__.values()))
-
-	def hash_tuple(self):
-		pass
-
-	def possible_hash_tuples(self):
-		pass
-	
 class Move(Event):
-	def __init__(self, elem, before_after, from_field, to_field, query = False):
-		Event.__init__(self, elem, before_after, query)
+	check_keys = ['from_field', 'to_field']
+
+	def __init__(self, elem, before_after, from_field, to_field, condition = lambda x: True, query = False):
+		Event.__init__(self, elem, before_after, condition, query)
 		self.from_field = from_field
 		self.to_field = to_field
 
@@ -49,7 +35,9 @@ class Move(Event):
 
 
 class AttrChange(Event):
-	def __init__(self, elem, before_after, attr_name, prev_value, next_value, query = False):
+	check_keys = ['attr_name', 'prev_value', 'next_value']
+
+	def __init__(self, elem, before_after, attr_name, prev_value, next_value, condition = lambda x: True, query = False):
 		Event.__init__(self, elem, before_after, query)
 		self.attr_name = attr_name
 		self.prev_value, self.next_value = prev_value, next_value
