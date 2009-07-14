@@ -12,13 +12,15 @@ backgrounds = {Apple: COLOR_BLACK,        Wall: COLOR_MAGENTA,
                Teleport: COLOR_BLUE,      Teleend: COLOR_GREEN,
                Head: COLOR_BLACK,         Body: COLOR_BLACK,
                Diamond: COLOR_BLACK,      Passage: COLOR_BLACK,
-               Rock: COLOR_BLACK,         Room: COLOR_CYAN}
+               Rock: COLOR_BLACK,         Room: COLOR_CYAN,
+			   Hole: COLOR_RED,           Gate: COLOR_GREEN}
 
 foregrounds = {Apple: COLOR_GREEN,        Wall: COLOR_BLACK,
                Teleport: COLOR_BLACK,     Teleend: COLOR_BLACK,
-               Head: COLOR_YELLOW,         Body: COLOR_GREEN,
+               Head: COLOR_YELLOW,        Body: COLOR_GREEN,
                Diamond: COLOR_RED,        Passage: COLOR_BLACK,
-               Rock: COLOR_WHITE,         Room: COLOR_BLACK}
+               Rock: COLOR_WHITE,         Room: COLOR_BLACK,
+			   Hole: COLOR_BLACK,         Gate: COLOR_RED}
 
 class Interface(object):
 	def __init__(self, filename = "lvl"):
@@ -35,7 +37,7 @@ class Interface(object):
 	def init_curses(self):
 		self.stdscr = curses.initscr()
 		curses.cbreak()
-		self.pad = curses.newpad(self.game.size_y + 3, self.game.size_x + 3)
+		self.pad = curses.newpad(max(self.game.size_y + 3, 20), max(self.game.size_x + 3, 20))
 		self.pad.keypad(1)
 
 	def end_curses(self):
@@ -72,7 +74,10 @@ class Interface(object):
 		elif type(e) == Wall:
 			letter = '#'
 		elif type(e) == Teleport:
-			letter = str(e.n)
+			if e.q:
+				letter = '?'
+			else:
+				letter = str(e.n)
 		elif type(e) == Teleend:
 			letter = str(e.n)
 		elif type(e) == Head:
@@ -87,6 +92,15 @@ class Interface(object):
 			letter = 'X'
 		elif type(e) == Room:
 			letter = 'R'
+		elif type(e) == Hole:
+			letter = 'H'
+		elif type(e) == Gate:
+			if e.open:
+				letter = 'G'
+			else: 
+				letter = '#'
+				bg = backgrounds[Wall]
+				fg = foregrounds[Wall]
 		else:
 			letter = ' '
 
@@ -98,7 +112,7 @@ class Interface(object):
 				self.pad.addch(y, x, *self.render_field(self.game.map[x,y]))
 		self.pad.addstr(self.game.size_y + 1, 0, "points: %i\ndiamonds: %i / %i" % (self.game.points, self.game.diamonds, self.game.diamonds_all))
 		# FIXME: Change this
-		self.pad.refresh(0, 0,  0,0, self.game.size_y + 2, self.game.size_x + 2)
+		self.pad.refresh(0, 0,  0,0, max(self.game.size_y + 2, 20), max(self.game.size_x + 2, 20))
 
 	def start(self):
 		# FIXME: To move the snake, send actions or whatever to game
@@ -154,6 +168,7 @@ interface = Interface(sys.argv[1])
 
 if len(sys.argv) == 3:
 	msg = interface.play(open(sys.argv[2]).read())
+	interface.start()
 	os.system("sleep 1")
 else:
 	msg = interface.start()
@@ -162,3 +177,7 @@ del interface
 print msg
 if len(sys.argv) != 3:
 	print m
+if msg is None:
+	sys.exit(-1)
+else:
+	sys.exit(0)

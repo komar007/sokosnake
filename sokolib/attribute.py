@@ -1,9 +1,12 @@
+import events
+
 class Attribute(object):
 	def __init__(self, name):
 		self.val = None
 		self.name = name
 
 	def __get__(self, obj, objtype = None):
+		# FIXME: This is a common value for all elements with this attribute! Fix this error!
 		return self.val
 
 	def __set__(self, obj, val):

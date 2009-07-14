@@ -8,23 +8,21 @@ class Element(object):
 	supported_actions = {}
 	def __init__(self, x, y, game = None, params = {}):
 		# Default __init__ ignores params. To be used by subclasses
-		self.x = x
-		self.y = y
-		self.conflicts_with = type(self).conflicts_with
+		self.x, self.y = x, y
+		self.conflicts_with = list(type(self).conflicts_with)
 		if game is not None:
 			game.add(self)
 		self.parse_params(params)
 
 	def __del__(self):
-		if self.game is not None:
-			self.game.remove(self)
+		destroy(self)
 	
+	def in_game(self):
+		return self.game is not None
+
 	def destroy(self):
 		if self.in_game():
 			self.game.remove(self)
-
-	def in_game(self):
-		return self.game is not None
 
 	def move(self, x, y):
 		# If the element can be placed on all of the elements...
@@ -50,8 +48,8 @@ class Element(object):
 			self.__dict__[key] = self.parse_param(val)
 		
 	def parse_param(self, param):
+		p = param
 		try:
-			p = param
 			p = float(param)
 			p = int(param)
 		except (ValueError, TypeError):

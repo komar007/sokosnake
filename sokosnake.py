@@ -18,7 +18,7 @@ class GameOver:
 class Sokosnake(Game):
 	element_hash = {'_': Passage, 'W': Wall,   'S': Head,    'A': Apple,
 	                'R': Room,    'K': Rock,   'D': Diamond, 'T': Teleport,
-	                't': Teleend}
+					't': Teleend, 'H': Hole,   'G': Gate}
 
 	def __init__(self, level_file):
 		parser = Parser(self.element_hash)

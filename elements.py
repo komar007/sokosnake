@@ -14,6 +14,7 @@ def action_stretch(self, event, params):
 	if self.next is None:
 		b = Body(self.x, self.y, self.game, {'prev': self})
 		self.next = b
+		self.game.snake.tail = b
 	else:
 		self.next.action('stretch').run()
 
@@ -23,13 +24,14 @@ class Head(Element):
 	def post_init(self):
 		self.real_len = 0
 		self.next = None
+		self.tail = self
 
 	def action_move(self, event, params):
 		if self.len > self.real_len:
 			self.action('stretch', {'prev': None}).run()
 		self.real_len += 1
 		self.move(*params['field'])
-
+	
 	supported_actions = {'move': action_move, 'stretch': action_stretch}
 
 class Body(Element):
@@ -45,13 +47,10 @@ class Body(Element):
 
 	def action_pull(self, event, params):
 		self.move(*event.from_field)
-
-
+	
 	supported_actions = {'pull': action_pull, 'stretch': action_stretch}
 
 class Room(Element):
-	conflicts_with = [Passage]
-
 	def post_init(self):
 		self.game.connect(self.game.event(Any, 'after', Move, to_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'in'}))
 
@@ -97,6 +96,9 @@ class Apple(Element):
 
 class Teleport(Element):
 	conflicts_with = [Wall, Diamond]
+	def __init__(self, x, y, game, params):
+		self.q = 0
+		Element.__init__(self, x, y, game, params)
 
 	def post_init(self):
 		self.teleend = self.game.find_element(lambda e: type(e) == Teleend and e.n == self.n)
@@ -110,3 +112,25 @@ class Rock(Pushable):
 	def post_init(self):
 		self.conflicts_with = [Wall, Head, Body, Diamond, Teleport, Teleend, Apple, Rock]
 		Pushable.post_init(self)
+
+class Hole(Element):
+	def post_init(self):
+		self.conflicts_with = [Diamond, Head, Body, Apple]
+		self.game.connect(self.game.event(None, 'after', Move, to_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Rock), self.action('neutralize'))
+
+	def action_neutralize(self, event, params):
+		event.element.destroy()
+		self.destroy()
+
+	supported_actions = {'neutralize': action_neutralize}
+
+class Gate(Element):
+	def post_init(self):
+		self.open = True
+		self.game.connect(self.game.event(Any, 'after', Move, from_field = (self.x, self.y), condition = lambda ev: ev.element == self.game.snake.tail), self.action('close'))
+	
+	def action_close(self, event, params):
+		self.open = False
+		self.conflicts_with.append(Head)
+
+	supported_actions = {'close': action_close}	
