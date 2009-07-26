@@ -1,9 +1,9 @@
 import events
 from attribute import Attribute
 from game import Conflict
-from action import Action
+from action import Action, ActionReceiver
 
-class Element(object):
+class Element(ActionReceiver):
 	conflicts_with = []
 	supported_actions = {}
 	def __init__(self, x, y, game = None, params = {}):
@@ -72,9 +72,6 @@ class Element(object):
 			return events.Move(self, before_after, from_field, to_field, condition, query = True)
 		elif type == events.AttrChange:
 			return events.AttrChange(self, before_after, attr_name, prev_val, next_val, condition, query = True) 
-
-	def action(self, name, params = {}):
-		return Action(self, name, params)
 
 	def post_init(self):
 		pass

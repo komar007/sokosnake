@@ -12,3 +12,7 @@ class Action:
 				self.target.supported_actions[self.name](self.target, calling_event, self.params)
 			except KeyError:
 				pass
+
+class ActionReceiver(object):
+	def action(self, name, params = {}):
+		return Action(self, name, params)
