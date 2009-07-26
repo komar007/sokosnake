@@ -30,10 +30,9 @@ class Element(ActionReceiver):
 		game.send_callbacks(events.Move(self, 'before',
 			from_field = (self.x, self.y), to_field = (x, y)))
 		if not any(self.conflict(x) for x in self.game.map[x, y]):
-			game.remove(self)
 			old_x, old_y = self.x, self.y
 			self.x, self.y = x, y
-			game.add(self)
+			game.update_element(self, (old_x, old_y), (x, y))
 			game.send_callbacks(events.Move(self, 'after',
 				from_field = (old_x, old_y), to_field = (self.x, self.y)))
 		else:

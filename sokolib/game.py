@@ -26,6 +26,10 @@ class Game(object):
 		self.elements.append(element)
 		self.send_callbacks(events.Create('after', element))
 
+	def update_element(self, element, from_field, to_field):
+		self.map[from_field].remove(element)
+		self.map[to_field].append(element)
+
 	def post_initialize(self):
 		for element in self.elements:
 			element.post_init()
