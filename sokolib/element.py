@@ -17,11 +17,11 @@ class Element(ActionReceiver):
 	def __del__(self):
 		destroy(self)
 	
-	def in_game(self):
+	def active(self):
 		return self.game is not None
 
 	def destroy(self):
-		if self.in_game():
+		if self.active():
 			self.game.remove(self)
 
 	def move(self, x, y):

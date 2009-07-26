@@ -10,7 +10,8 @@ class Event(object):
 		if before_after in ['before', 'after']:
 			self.before_after = before_after
 		else:
-			raise TypeError("Event before_after must be either 'before' or 'after'")
+			raise TypeError("Event before_after must be either 'before' or 'after', not: '%s'" %
+					repr(before_after))
 
 	def match(self, event):
 		return all(self.__dict__[key] is None or self.__dict__[key] == event.__dict__[key] for key

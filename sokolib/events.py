@@ -38,7 +38,7 @@ class AttrChange(Event):
 	check_keys = ['attr_name', 'prev_value', 'next_value']
 
 	def __init__(self, elem, before_after, attr_name, prev_value, next_value, condition = lambda x: True, query = False):
-		Event.__init__(self, elem, before_after, query)
+		Event.__init__(self, elem, before_after, condition, query)
 		self.attr_name = attr_name
 		self.prev_value, self.next_value = prev_value, next_value
 	
@@ -58,3 +58,34 @@ class AttrChange(Event):
 	def possible_hash_tuples(self):
 		return [(AttrChange, self.before_after, self.element),
 		        (AttrChange, self.before_after, self.element, self.attr_name)]
+
+class Create(Event):
+	check_keys = []
+
+	def __init__(self, before_after, elem = None, condition = lambda x: True, query = False):
+		Event.__init__(self, elem, before_after, condition, query)
+
+	def __str__(self):
+		return "Element %s was added to the game" % repr(self.element)
+
+	def hash_tuple(self):
+		return (Create, self.before_after)
+
+	def possible_hash_tuples(self):
+		return [(Create, self.before_after)]
+
+class Remove(Event):
+	check_keys = []
+
+	def __str__(self):
+		return "Element %s was removed from the game" % repr(self.element)
+
+	def hash_tuple(self):
+		if self.element is not None:
+			return (Remove, self.before_after, self.element)
+		else:
+			return (Remove, self.before_after)
+
+	def possible_hash_tuples(self):
+		return [(Remove, self.before_after),
+		        (Remove, self.before_after, self.element)]

@@ -20,9 +20,11 @@ class Game(object):
 		self.callbacks = {}
 	
 	def add(self, element):
+		self.send_callbacks(events.Create('before', element))
 		element.game = self
 		self.map[element.x, element.y].append(element)
 		self.elements.append(element)
+		self.send_callbacks(events.Create('after', element))
 
 	def post_initialize(self):
 		for element in self.elements:
@@ -35,9 +37,11 @@ class Game(object):
 		return self.find_elements(func)[0]
 
 	def remove(self, element):
+		self.send_callbacks(events.Remove(element, 'before'))
 		element.game = None
 		self.map[element.x, element.y].remove(element)
 		self.elements.remove(element)
+		self.send_callbacks(events.Remove(element, 'after'))
 
 	def send_callbacks(self, event):
 		for key in event.possible_hash_tuples():

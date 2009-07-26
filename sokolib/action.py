@@ -7,7 +7,7 @@ class Action:
 		self.params = params
 
 	def run(self, calling_event = None):
-		if self.target.in_game():
+		if self.target.active():
 			try:
 				self.target.supported_actions[self.name](self.target, calling_event, self.params)
 			except KeyError:
@@ -16,3 +16,6 @@ class Action:
 class ActionReceiver(object):
 	def action(self, name, params = {}):
 		return Action(self, name, params)
+
+	def active(self):
+		return True
