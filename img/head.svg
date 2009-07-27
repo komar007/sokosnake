@@ -78,7 +78,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="7.9180417"
      inkscape:cx="14.965242"
-     inkscape:cy="9.8089617"
+     inkscape:cy="9.8721086"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
@@ -102,66 +102,6 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
-    <g
-       id="g3246"
-       transform="matrix(0.6102089,0,0,0.5523403,-57.800699,-44.133499)">
-      <use
-         x="0"
-         y="0"
-         xlink:href="#use3181"
-         id="use3183"
-         transform="matrix(1.638783,0,0,1.8104781,129.55378,-66.559436)"
-         width="744.09448"
-         height="1052.3622" />
-      <use
-         x="0"
-         y="0"
-         xlink:href="#use3181"
-         id="use3358"
-         transform="matrix(1.638783,0,0,1.8104781,105.40626,-78.36219)"
-         width="744.09448"
-         height="1052.3622" />
-    </g>
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use3181"
-       id="use3360"
-       transform="translate(11.788028,-81.700687)"
-       width="744.09448"
-       height="1052.3622" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use3181"
-       id="use3362"
-       transform="translate(11.877331,-81.432778)"
-       width="744.09448"
-       height="1052.3622" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use3181"
-       id="use3364"
-       transform="translate(7.8586851,-87.148185)"
-       width="744.09448"
-       height="1052.3622" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use3181"
-       id="use3366"
-       transform="translate(5.8940138,-92.417076)"
-       width="744.09448"
-       height="1052.3622" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use3181"
-       id="use3368"
-       transform="translate(20.182532,-76.163886)"
-       width="744.09448"
-       height="1052.3622" />
     <g
        id="g5786">
       <rect
