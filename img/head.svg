@@ -77,13 +77,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9180417"
-     inkscape:cx="14.965242"
-     inkscape:cy="9.8721086"
+     inkscape:cx="9.9943706"
+     inkscape:cy="19.054177"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
-     inkscape:window-width="789"
+     inkscape:window-width="1278"
      inkscape:window-height="1008"
      inkscape:window-x="0"
      inkscape:window-y="14" />
@@ -102,16 +102,17 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
+    <path
+       style="fill:#cc0000;fill-rule:evenodd;stroke:#510000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 27.684005,14.050049 L 31.434741,13.871442 L 30.809618,16.28263 L 31.166831,18.515211 L 26.701669,17.979391 L 27.684005,14.050049 z"
+       id="path3168" />
     <g
        id="g5786">
-      <rect
-         ry="6.5672803"
-         y="3.3166819"
-         x="3.4644628"
-         height="25.540585"
-         width="25.436083"
+      <path
+         style="fill:#4e9a06;fill-opacity:1;fill-rule:nonzero;stroke:#1f4700;stroke-width:4.03499985;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="M 10.031743,3.3166819 L 22.333265,3.3166819 C 25.971539,3.3166819 28.900546,6.2456889 28.900546,9.8839622 L 26.221449,16.086974 L 28.900546,22.289986 C 28.900546,25.928259 25.971539,28.857266 22.333265,28.857266 L 10.031743,28.857266 C 6.3934698,28.857266 3.4644628,25.928259 3.4644628,22.289986 L 3.4644628,9.8839622 C 3.4644628,6.2456889 6.3934698,3.3166819 10.031743,3.3166819 z"
          id="rect3171"
-         style="opacity:1;fill:#4e9a06;fill-opacity:1;fill-rule:nonzero;stroke:#1f4700;stroke-width:4.03499985;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         sodipodi:nodetypes="cccccccccc" />
       <g
          transform="matrix(1.5372465,0,0,1.4055851,-11.970805,-6.4619947)"
          id="g5640">

@@ -81,11 +81,11 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <rect
-       style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:1.48562419;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#babdb6;stroke:none;stroke-width:1.48562419000000001;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3619"
-       width="30.514376"
-       height="30.514376"
-       x="0.7428121"
-       y="0.74281269" />
+       width="32"
+       height="32"
+       x="0"
+       y="-1.7763568e-15" />
   </g>
 </svg>
