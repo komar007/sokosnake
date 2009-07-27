@@ -28,14 +28,26 @@ class GuiElement(QtGui.QGraphicsItem, ActionReceiver):
 
 	supported_actions = {'move': action_move}
 
+class MyView(QtGui.QGraphicsView):
+	def keyPressEvent(self, event):
+		if event.type() == QtCore.QEvent.KeyPress:
+			if event.key() == QtCore.Qt.Key_Down:
+				self.interface.step(Down)
+			elif event.key() == QtCore.Qt.Key_Up:
+				self.interface.step(Up)
+			elif event.key() == QtCore.Qt.Key_Left:
+				self.interface.step(Left)
+			elif event.key() == QtCore.Qt.Key_Right:
+				self.interface.step(Right)
+				
+
 class QtInterface(ActionReceiver):
 	def __init__(self, filename):
 		self.game = Sokosnake(filename)
 		self.init_qt()
-		self.i = 0;
-		self.steps = open(sys.argv[2]).read()
 
 		self.game.connect(events.Create('after'), self.action('create'))
+		self.game.connect(events.Remove(None, 'before'), self.action('destroy'))
 		self.game.load()
 
 	def action_create(self, event, params):
@@ -44,15 +56,21 @@ class QtInterface(ActionReceiver):
 		event.element.gui.moveBy(SIZE * event.element.x, SIZE * event.element.y)
 		self.game.connect(event.element.event('after', events.Move), event.element.gui.action('move'))
 
-	supported_actions = {'create': action_create}
+	def action_destroy(self, event, params):
+		self.scene.removeItem(event.element.gui)
+		del(event.element.gui)
+
+	supported_actions = {'create': action_create, 'destroy': action_destroy}
 
 	def init_qt(self):
 		self.app = QtGui.QApplication(sys.argv)
 		self.scene = QtGui.QGraphicsScene()
 		self.scene.setSceneRect(0,0,self.game.size_x * SIZE, self.game.size_y * SIZE)
 
-		self.view = QtGui.QGraphicsView(self.scene)
+		self.view = MyView(self.scene)
+		self.view.interface = self
 		self.view.setRenderHint(QtGui.QPainter.Antialiasing)
+		self.view.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(0,0,0)))
 
 		self.view.resize(self.game.size_x * SIZE, self.game.size_y * SIZE)
 
@@ -63,13 +81,16 @@ class QtInterface(ActionReceiver):
 	
 	def start(self):
 		self.timer = QtCore.QTimer()
-		QtCore.QObject.connect(self.timer, QtCore.SIGNAL('timeout()'), self.step)
+		#QtCore.QObject.connect(self.timer, QtCore.SIGNAL('timeout()'), self.step)
+		QtCore.QObject.connect(self.view, QtCore.SIGNAL('clicked'), self.step)
 		self.timer.start(300)
 		return self.app.exec_()
 
-	def step(self):
-		self.game.step(DIR[self.steps[self.i]])
-		self.i+=1
+	def step(self, dir):
+		try:
+			self.game.step(dir)
+		except sokolib.game.Conflict:
+			print "Game over"
 
 q = QtInterface(sys.argv[1])
 q.start()
