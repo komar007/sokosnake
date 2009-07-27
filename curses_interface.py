@@ -33,6 +33,7 @@ class Interface(object):
 
 	def load_level(self, filename):
 		self.game = Sokosnake(filename)
+		self.game.load()
 
 	def init_curses(self):
 		self.stdscr = curses.initscr()

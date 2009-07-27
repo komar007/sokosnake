@@ -21,10 +21,12 @@ class Sokosnake(Game):
 	                't': Teleend, 'H': Hole,   'G': Gate}
 
 	def __init__(self, level_file):
-		parser = Parser(self.element_hash)
-		size_x, size_y = parser.load(open(level_file).read())
+		self.parser = Parser(self.element_hash)
+		size_x, size_y = self.parser.load(open(level_file).read())
 		Game.__init__(self, size_x, size_y)
-		for element in parser.parse():
+
+	def load(self):
+		for element in self.parser.parse():
 			self.add(element)
 		self.snake = self.find_element(lambda e: type(e) == Head)
 		self.points = 0
