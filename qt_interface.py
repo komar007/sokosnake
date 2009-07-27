@@ -43,8 +43,9 @@ class MyView(QtGui.QGraphicsView):
 
 class QtInterface(ActionReceiver):
 	def __init__(self, filename):
-		self.game = Sokosnake(filename)
-		self.init_qt()
+		self.init_qt(not filename)
+		self.game = Sokosnake(filename or self.filename)
+		self.set_sizes()
 
 		self.game.connect(events.Create('after'), self.action('create'))
 		self.game.connect(events.Remove(None, 'before'), self.action('destroy'))
@@ -62,22 +63,25 @@ class QtInterface(ActionReceiver):
 
 	supported_actions = {'create': action_create, 'destroy': action_destroy}
 
-	def init_qt(self):
+	def init_qt(self, choose):
 		self.app = QtGui.QApplication(sys.argv)
 		self.scene = QtGui.QGraphicsScene()
-		self.scene.setSceneRect(0,0,self.game.size_x * SIZE, self.game.size_y * SIZE)
 
 		self.view = MyView(self.scene)
+		if choose:
+			self.filename = QtGui.QFileDialog.getOpenFileName(self.view, "Choose a level...", "./levels", "All Files (*.*)")
 		self.view.interface = self
 		self.view.setRenderHint(QtGui.QPainter.Antialiasing)
 		self.view.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(0,0,0)))
-
-		self.view.resize(self.game.size_x * SIZE, self.game.size_y * SIZE)
 
 		for el in [Passage, Wall, Head, Body, Apple, Room, Rock, Diamond, Teleport, Teleend, Hole, Gate]:
 			ELS[el] = QtSvg.QSvgRenderer('img/' + el.__name__.lower() + '.svg')
 
 		self.view.show()
+
+	def set_sizes(self):
+		self.scene.setSceneRect(0,0,self.game.size_x * SIZE, self.game.size_y * SIZE)
+		self.view.resize(self.game.size_x * SIZE + 64, self.game.size_y * SIZE + 64)
 	
 	def start(self):
 		self.timer = QtCore.QTimer()
@@ -92,5 +96,9 @@ class QtInterface(ActionReceiver):
 		except sokolib.game.Conflict:
 			print "Game over"
 
-q = QtInterface(sys.argv[1])
+if len(sys.argv) == 2:
+	filename = sys.argv[1]
+else:
+	filename = None
+q = QtInterface(filename)
 q.start()
