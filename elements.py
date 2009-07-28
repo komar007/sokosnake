@@ -126,11 +126,10 @@ class Hole(Element):
 
 class Gate(Element):
 	def post_init(self):
-		self.open = True
 		self.game.connect(self.game.event(Any, 'after', Move, from_field = (self.x, self.y), condition = lambda ev: ev.element == self.game.snake.tail), self.action('close'))
 	
 	def action_close(self, event, params):
-		self.open = False
-		self.conflicts_with.append(Head)
+		Wall(self.x, self.y, self.game)
+		self.game.remove(self)
 
 	supported_actions = {'close': action_close}	
