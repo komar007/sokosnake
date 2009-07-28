@@ -72,7 +72,7 @@ class QtInterface(ActionReceiver):
 		self.view.setRenderHint(QtGui.QPainter.Antialiasing)
 		self.view.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(0,0,0)))
 
-		self.view.resize(self.game.size_x * SIZE, self.game.size_y * SIZE)
+		self.view.resize(self.game.size_x * SIZE + 50, self.game.size_y * SIZE + 50)
 
 		for el in [Passage, Wall, Head, Body, Apple, Room, Rock, Diamond, Teleport, Teleend, Hole, Gate]:
 			ELS[el] = QtSvg.QSvgRenderer('img/' + el.__name__.lower() + '.svg')
