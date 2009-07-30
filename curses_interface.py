@@ -96,12 +96,7 @@ class Interface(object):
 		elif type(e) == Hole:
 			letter = 'H'
 		elif type(e) == Gate:
-			if e.open:
-				letter = 'G'
-			else: 
-				letter = '#'
-				bg = backgrounds[Wall]
-				fg = foregrounds[Wall]
+			letter = 'G'
 		else:
 			letter = ' '
 
