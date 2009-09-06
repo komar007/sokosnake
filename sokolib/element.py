@@ -72,6 +72,13 @@ class Element(ActionReceiver):
 		elif type == events.AttrChange:
 			return events.AttrChange(self, before_after, attr_name, prev_val, next_val, condition, query = True) 
 
+	def pos(self):
+		return (self.x, self.y)
+
 	def post_init(self):
 		pass
+
+class DynamicElement(Element):
+	def pos(self):
+		return lambda: (self.x, self.y)
 

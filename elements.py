@@ -52,9 +52,9 @@ class Body(Element):
 
 class Room(Element):
 	def post_init(self):
-		self.game.connect(self.game.event(Any, 'after', Move, to_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'in'}))
+		self.game.connect(self.game.event(Any, 'after', Move, to_field = self.pos(), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'in'}))
 
-		self.game.connect(self.game.event(Any, 'after', Move, from_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'out'}))
+		self.game.connect(self.game.event(Any, 'after', Move, from_field = self.pos(), condition = lambda ev: type(ev.element) == Diamond), self.action('diamond', {'dir': 'out'}))
 
 	def action_diamond(self, event, params):
 		if params['dir'] == 'in':
@@ -85,7 +85,7 @@ class Apple(Element):
 
 	def post_init(self):
 		snake = self.game.snake
-		self.game.connect(snake.event('before', Move, to_field = (self.x, self.y)), self.action('eat'))
+		self.game.connect(snake.event('before', Move, to_field = self.pos()), self.action('eat'))
 
 	def action_eat(self, event, params):
 		self.game.snake.action('stretch').run()
@@ -103,7 +103,7 @@ class Teleport(Element):
 	def post_init(self):
 		self.teleend = self.game.find_element(lambda e: type(e) == Teleend and e.n == self.n)
 		snake = self.game.snake
-		self.game.connect(snake.event('after', Move, to_field = (self.x, self.y)), snake.action('move', {'field': (self.teleend.x, self.teleend.y)}))
+		self.game.connect(snake.event('after', Move, to_field = self.pos()), snake.action('move', {'field': (self.teleend.x, self.teleend.y)}))
 
 class Teleend(Element):
 	conflicts_with = [Wall]
@@ -116,7 +116,7 @@ class Rock(Pushable):
 class Hole(Element):
 	def post_init(self):
 		self.conflicts_with = [Diamond, Head, Body, Apple]
-		self.game.connect(self.game.event(None, 'after', Move, to_field = (self.x, self.y), condition = lambda ev: type(ev.element) == Rock), self.action('neutralize'))
+		self.game.connect(self.game.event(None, 'after', Move, to_field = self.pos(), condition = lambda ev: type(ev.element) == Rock), self.action('neutralize'))
 
 	def action_neutralize(self, event, params):
 		event.element.destroy()
@@ -126,7 +126,7 @@ class Hole(Element):
 
 class Gate(Element):
 	def post_init(self):
-		self.game.connect(self.game.event(Any, 'after', Move, from_field = (self.x, self.y), condition = lambda ev: ev.element == self.game.snake.tail), self.action('close'))
+		self.game.connect(self.game.event(Any, 'after', Move, from_field = self.pos(), condition = lambda ev: ev.element == self.game.snake.tail), self.action('close'))
 	
 	def action_close(self, event, params):
 		Wall(self.x, self.y, self.game)
