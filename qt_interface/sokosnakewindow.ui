@@ -141,5 +141,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_Open</sender>
+   <signal>activated()</signal>
+   <receiver>SokosnakeWindow</receiver>
+   <slot>load_level()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>load_level()</slot>
+ </slots>
 </ui>

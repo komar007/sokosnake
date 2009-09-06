@@ -7,7 +7,6 @@ class SokosnakeWindow(QtGui.QMainWindow):
 		QtGui.QWidget.__init__(self, parent)
 		self.ui = Ui_SokosnakeWindow()
 		self.ui.setupUi(self)
-		QtCore.QObject.connect(self.ui.action_Open, QtCore.SIGNAL("activated()"), self.load_level)
 	
 	def load_level(self):
 		self.filename = QtGui.QFileDialog.getOpenFileName(self, "Choose a level...", "levels", "All Files (*.*)")
